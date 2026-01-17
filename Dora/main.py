@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
 from sklearn.feature_extraction import DictVectorizer
+from sklearn.impute import SimpleImputer
+
 
 class Dora:
   def __init__(self, data = None, output = None):
@@ -34,7 +36,7 @@ class Dora:
 
   def impute_missing_values(self):
     column_names = self.input_columns()
-    imp = preprocessing.Imputer()
+    imp = SimpleImputer()
     imp.fit(self.data[column_names])
     self.data[column_names] = imp.transform(self.data[column_names])
     self._log("self.impute_missing_values()")
@@ -53,7 +55,7 @@ class Dora:
     vec = DictVectorizer()
     one_hot_matrix = vec.fit_transform(feature_dictionaries).toarray()
     one_hot_matrix = pd.DataFrame(one_hot_matrix)
-    one_hot_matrix.columns = vec.get_feature_names()
+    one_hot_matrix.columns = vec.get_feature_names_out()
     self.data = pd.concat(
       [
         self.data,
@@ -85,7 +87,7 @@ class Dora:
     return column_names
 
   def explore(self):
-    features = self.input_data().columns
+    features = self.input_columns()
     row_count = math.floor(math.sqrt(len(features)))
     col_count = math.ceil(len(features) / row_count)
     figure = plt.figure(1)
